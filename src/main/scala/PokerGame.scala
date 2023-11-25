@@ -10,7 +10,7 @@ class OmahaHold(line: String) extends PokerGame {
 
 
     val boardCards = line.split(" ")(1).grouped(2).toArray
-    var handsString = line.split(" ").tail
+    val handsString = line.split(" ").tail
 
     var board: mutable.ArrayBuffer[Card] = new mutable.ArrayBuffer()
 
@@ -25,23 +25,14 @@ class OmahaHold(line: String) extends PokerGame {
 }
 
 class TexasHold(line: String) extends PokerGame {
-  private var hands: mutable.ArrayBuffer[Hand] = new mutable.ArrayBuffer()
-
   override def sortHands(): String = {
 
     val parts = line.split(" ")
     val board = Board.generateBoard(parts(1))
-    val handsString = parts.drop(2)
-    
-    handsString.foreach(hs => {
-      hands.append(Hand(Board.StringToCards(hs), board))
-    })
 
+    val hands = parts.drop(2).map(hs => Hand(Board.StringToCards(hs), board))
     hands.foreach(h => h.getHandClassification())
-
-    hands.sortInPlace()(Hand.handSorting)
-    hands.foreach(h=> println(s"Hand: ${h.cards} , classification: ${h.handClassification} , pairs: ${h.pairs}"))
-    hands.mkString(" ")
+    hands.sorted(Hand.handSorting).mkString(" ")
   }
 }
 
@@ -49,15 +40,11 @@ class FiveCardDraw(line: String) extends PokerGame {
   var hands: mutable.ArrayBuffer[Hand] = new mutable.ArrayBuffer()
   override def sortHands(): String = {
 
-
-    var handsString = line.split(" ").tail
-
-    var board: mutable.ArrayBuffer[Card] = new mutable.ArrayBuffer()
+    val handsString = line.split(" ").tail
 
     handsString.foreach(hs => {
-      hands.append(Hand(Board.StringToCards(hs), board))
+      hands.append(Hand(Board.StringToCards(hs), Seq.empty[Card]))
     })
-
     hands.foreach(h => h.getHandClassification())
     hands.sortInPlace()(Hand.handSorting)
     hands.foreach(h => println(s"Hand: ${h.cards} , classification: ${h.handClassification}, higher card ${h.cards.sortBy(_.getRank)} pairs: ${h.pairs}"))

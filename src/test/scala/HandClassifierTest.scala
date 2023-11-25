@@ -56,6 +56,10 @@ class HandClassifierTest extends AnyFunSuite with Matchers {
     new Hand(Board.StringToCards("2h3h4h5h8h")).getHandClassification() shouldEqual HandValue.FLUSH
   }
 
+  test("getSingleHandClassificationStraight") {
+    new Hand(Board.StringToCards("KcQcJcTc9s")).getHandClassification() shouldEqual HandValue.STRAIGHT
+  }
+
   test("getHandClassificationStraight") {
     new Hand(Board.StringToCards("KcQcJcTc9s")).getHandClassification() shouldEqual HandValue.STRAIGHT
     new Hand(Board.StringToCards("AhKcQcJcTc")).getHandClassification() shouldEqual HandValue.STRAIGHT

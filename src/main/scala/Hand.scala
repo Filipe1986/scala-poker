@@ -15,7 +15,7 @@ object Hand {
         if(x.handClassification == HandValue.HIGH_CARD){
           compareRank(x, y)
         }else if(x.handClassification == HandValue.PAIR){
-          var compare = x.pairs.get(0).id.compare(y.pairs.get(0).id)
+          val compare = x.pairs.get(0).id.compare(y.pairs.get(0).id)
           if(compare == 0) {
             compareRank(x, y)
           } else {
@@ -32,16 +32,16 @@ object Hand {
     }
 
     def compareRank(x: Hand, y: Hand): Int = {
-      var xCopy = x.cards.clone()
-      xCopy = xCopy.sortBy(_.getRankWeight).reverse
-      var yCopy = y.cards.clone()
-      yCopy = yCopy.sortBy(_.getRankWeight).reverse
+
+
+      val xCopy = x.cards.sortBy(_.getRankWeight).reverse
+      val yCopy = y.cards.sortBy(_.getRankWeight).reverse
 
       val handRank = xCopy.zip(yCopy).map { case (a, b) =>
         a.rank.compare(b.rank)
       }
 
-      var result = handRank.filter(_!= 0)
+      val result = handRank.filter(_!= 0)
 
       if(result.nonEmpty) result.head else 0
 
@@ -51,7 +51,7 @@ object Hand {
 
 
 
-case class Hand(cards: mutable.ArrayBuffer[Card] = null, board: mutable.ArrayBuffer[Card] = new mutable.ArrayBuffer()) {
+case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
 
   require(cards.nonEmpty, "Cards cannot be empty")
 
@@ -64,7 +64,7 @@ case class Hand(cards: mutable.ArrayBuffer[Card] = null, board: mutable.ArrayBuf
 
   private var fourKind: Rank.Value = null
   private var threeKind: Rank.Value = null
-  var pairs: util.ArrayList[Rank.Value] = new ArrayList
+  var pairs: util.ArrayList[Rank.Value] = new util.ArrayList
 
   var handClassification: HandValue.Value = null
 
@@ -74,7 +74,7 @@ case class Hand(cards: mutable.ArrayBuffer[Card] = null, board: mutable.ArrayBuf
 
 
   def getHandClassification(): HandValue.Value = {
-    classifyHand
+    classifyHand()
     if(handClassification != null) {
       return handClassification
     }
@@ -112,8 +112,7 @@ case class Hand(cards: mutable.ArrayBuffer[Card] = null, board: mutable.ArrayBuf
     }
     handClassification = HandValue.HIGH_CARD
 
-
-    return handClassification
+    handClassification
   }
 
   def getHandWeight: Int = {
@@ -121,7 +120,7 @@ case class Hand(cards: mutable.ArrayBuffer[Card] = null, board: mutable.ArrayBuf
     classification.id + 1
   }
 
-  def handCount: Unit = {
+  private def handCount(): Unit = {
     suitCounterMap = mutable.Map()
     rankCounterMap = mutable.Map()
 
@@ -131,17 +130,16 @@ case class Hand(cards: mutable.ArrayBuffer[Card] = null, board: mutable.ArrayBuf
     })
   }
 
-   def classifyHand: Unit = {
+   private def classifyHand(): Unit = {
 
-     handCount
-
-     checkFlush
-     checkRankCombinations
-     checkStraight
+     handCount()
+     checkFlush()
+     checkRankCombinations()
+     checkStraight()
   }
 
 
-  private def checkFlush: Unit = {
+  private def checkFlush(): Unit = {
     suitCounterMap.foreach { case (suit, count) =>
       if (count == 5) {
         flush = Some(suit)
@@ -149,7 +147,7 @@ case class Hand(cards: mutable.ArrayBuffer[Card] = null, board: mutable.ArrayBuf
     }
   }
 
-  private def checkRankCombinations: Unit = {
+  private def checkRankCombinations(): Unit = {
     rankCounterMap.foreach { case (rank, count) =>
       if (count == 4) {
         fourKind = rank
@@ -163,28 +161,12 @@ case class Hand(cards: mutable.ArrayBuffer[Card] = null, board: mutable.ArrayBuf
     }
   }
 
-
-  def hasSequence(arr: Array[Int], sequenceLength: Int): Unit = {
-    this.isStraight = false
-    var count = 1
-    var i = 0
-    for (i <- 0 until arr.length - 1) {
-      if (arr(i) + 1 == arr(i + 1)) {
-        count += 1
-        if (count >= sequenceLength) isStraight = true
-      } else {
-        count = 1
-      }
-    }
-  }
-
-
-  def checkStraight: Unit = {
-    allCards.sortInPlaceBy(_.getRankWeight)
-    val isA_highest = allCards.last.getRank == Rank.ACE
-    val rankWeightsArray: Array[Int] = allCards.map(c => c.getRankWeight).toArray
+  private def checkStraight(): Unit = {
+    val sortedCards = allCards.sortBy(_.getRankWeight)
+    val isA_highest = sortedCards.last.getRank == Rank.ACE
+    val rankWeightsArray: Array[Int] = sortedCards.map(c => c.getRankWeight).toArray
     val newRankWeightsArray = if(isA_highest) 1 +: rankWeightsArray else rankWeightsArray
-    hasSequence(newRankWeightsArray, 5)
+    isStraight = newRankWeightsArray.sliding(5).exists(seq => seq.zip(seq.tail).forall { case (a, b) => b == a + 1 })
   }
 
   override def toString: String = {

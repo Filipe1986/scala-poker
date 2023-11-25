@@ -22,7 +22,7 @@ class TexasHoldemSolverTest2 extends AnyFunSuite with Matchers {
 
   test("Th2h5c8sAsKc") {
     val board: String = "2h5c8sAsKc"
-    Solver.process(s"texas-holdem ${board} Qs9h Jc6s") shouldEqual "Jc6s Qs9h"
+    Solver.process(s"texas-holdem $board Qs9h Jc6s") shouldEqual "Jc6s Qs9h"
   }
 
   test("Texas Holdem 2h5c8sAsKc hand classifier") {
