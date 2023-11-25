@@ -5,7 +5,7 @@ trait PokerGame {
 }
 
 class OmahaHold(line: String) extends PokerGame {
-  var hands: mutable.ArrayBuffer[Hand] = new mutable.ArrayBuffer()
+  private var hands: mutable.ArrayBuffer[Hand] = new mutable.ArrayBuffer()
   override def sortHands(): String = {
 
 
@@ -33,14 +33,14 @@ class TexasHold(line: String) extends PokerGame {
     val hands = parts.drop(2).map(hs => Hand(Board.StringToCards(hs), board))
     hands.foreach(h => h.getHandClassification())
     val sortedHands = hands.sorted(Hand.handSorting)
-    sortedHands.foreach(h => println(s"Hand: ${h.cards} , classification: ${h.handClassification}, higher card ${h.cards.sortBy(_.getRank)} pairs: ${h.pairs}"))
+    sortedHands.foreach(s=> s.printHand())
 
     sortedHands.mkString(" ")
   }
 }
 
 class FiveCardDraw(line: String) extends PokerGame {
-  var hands: mutable.ArrayBuffer[Hand] = new mutable.ArrayBuffer()
+  private val hands: mutable.ArrayBuffer[Hand] = new mutable.ArrayBuffer()
   override def sortHands(): String = {
 
     val handsString = line.split(" ").tail
@@ -50,7 +50,7 @@ class FiveCardDraw(line: String) extends PokerGame {
     })
     hands.foreach(h => h.getHandClassification())
     hands.sortInPlace()(Hand.handSorting)
-    hands.foreach(h => println(s"Hand: ${h.cards} , classification: ${h.handClassification}, higher card ${h.cards.sortBy(_.getRank)} pairs: ${h.pairs}"))
+    hands.foreach(s=> s.printHand())
     hands.mkString(" ")
   }
 }
