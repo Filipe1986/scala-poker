@@ -1,0 +1,4 @@
+/target/
+/project
+.idea
+sbt.json
