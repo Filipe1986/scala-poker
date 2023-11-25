@@ -141,7 +141,7 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
 
   private def checkFlush(): Unit = {
     suitCounterMap.foreach { case (suit, count) =>
-      if (count == 5) {
+      if (count >= 5) {
         flush = Some(suit)
       }
     }

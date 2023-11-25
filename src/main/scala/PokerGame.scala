@@ -32,7 +32,10 @@ class TexasHold(line: String) extends PokerGame {
 
     val hands = parts.drop(2).map(hs => Hand(Board.StringToCards(hs), board))
     hands.foreach(h => h.getHandClassification())
-    hands.sorted(Hand.handSorting).mkString(" ")
+    val sortedHands = hands.sorted(Hand.handSorting)
+    sortedHands.foreach(h => println(s"Hand: ${h.cards} , classification: ${h.handClassification}, higher card ${h.cards.sortBy(_.getRank)} pairs: ${h.pairs}"))
+
+    sortedHands.mkString(" ")
   }
 }
 

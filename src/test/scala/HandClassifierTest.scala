@@ -12,13 +12,6 @@ class HandClassifierTest extends AnyFunSuite with Matchers {
 
   }
 
-  test("getHandMissedHandClassification sdsad") {
-
-    Hand(Board.StringToCards("5s5d7s4dQd")).getHandClassification() shouldEqual HandValue.PAIR
-    Hand(Board.StringToCards("7h6h7d2cJc")).getHandClassification() shouldEqual HandValue.PAIR
-
-  }
-
 
   test("getHandMissedHandClassification") {
 
@@ -32,6 +25,13 @@ class HandClassifierTest extends AnyFunSuite with Matchers {
     Hand(Board.StringToCards("5c6dAcAsQs2hAh")).getHandClassification() shouldEqual HandValue.THREE_OF_A_KIND
   }
 
+  test("classifyFourOfKind") {
+    new Hand(Board.StringToCards("4s4h4c4d7c")).getHandClassification() shouldEqual HandValue.FOUR_OF_A_KIND
+    new Hand(Board.StringToCards("5s5h7c5c5d")).getHandClassification() shouldEqual HandValue.FOUR_OF_A_KIND
+    new Hand(Board.StringToCards("7cAsAhAcAd")).getHandClassification() shouldEqual HandValue.FOUR_OF_A_KIND
+    new Hand(Board.StringToCards("5s5h7c5c5d")).getHandClassification() shouldEqual HandValue.FOUR_OF_A_KIND
+  }
+
   test("getHandClassificationStraightFlush") {
     new Hand(Board.StringToCards("KcQcJcTc9c")).getHandClassification() shouldEqual HandValue.STRAIGHT_FLUSH
     new Hand(Board.StringToCards("QcJcKcTcAc")).getHandClassification() shouldEqual HandValue.STRAIGHT_FLUSH
@@ -39,12 +39,7 @@ class HandClassifierTest extends AnyFunSuite with Matchers {
     new Hand(Board.StringToCards("6s2s4s3s5s")).getHandClassification() shouldEqual HandValue.STRAIGHT_FLUSH
   }
 
-  test("classifyFourOfKind") {
-    new Hand(Board.StringToCards("4s4h4c4d7c")).getHandClassification() shouldEqual HandValue.FOUR_OF_A_KIND
-    new Hand(Board.StringToCards("5s5h7c5c5d")).getHandClassification() shouldEqual HandValue.FOUR_OF_A_KIND
-    new Hand(Board.StringToCards("7cAsAhAcAd")).getHandClassification() shouldEqual HandValue.FOUR_OF_A_KIND
-    new Hand(Board.StringToCards("5s5h7c5c5d")).getHandClassification() shouldEqual HandValue.FOUR_OF_A_KIND
-  }
+
 
   test("classifyFullHouse") {
     new Hand(Board.StringToCards("4s4h4c5s5c")).getHandClassification() shouldEqual HandValue.FULL_HOUSE
