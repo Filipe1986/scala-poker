@@ -60,7 +60,7 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
   private var threeKind: Option[Rank.Value] = None
   private val pairs: util.ArrayList[Rank.Value] = new util.ArrayList
 
-  var handClassification: Option[HandValue.Value] = None
+  private var handClassification: Option[HandValue.Value] = None
 
   private var suitCounts: Map[Suit.Value, Int] = Map()
 
@@ -69,42 +69,17 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
 
   def getHandClassification: HandValue.Value = {
     classifyHand()
-    if(handClassification.isDefined) {
-      return handClassification.get
-    }
-    if(isStraight && flush.nonEmpty){
-      handClassification = Some(HandValue.STRAIGHT_FLUSH)
-      return handClassification.get
-    }
-    if(fourKind.isDefined){
-      handClassification = Some(HandValue.FOUR_OF_A_KIND)
-      return handClassification.get
-    }
-    if(threeKind.isDefined && pairs.size() > 0){
-      handClassification = Some(HandValue.FULL_HOUSE)
-      return handClassification.get
-    }
-    if(flush.nonEmpty){
-      handClassification = Some(HandValue.FLUSH)
-      return handClassification.get
-    }
-    if(isStraight){
-      handClassification = Some(HandValue.STRAIGHT)
-      return handClassification.get
-    }
-    if(threeKind.isDefined){
-      handClassification = Some(HandValue.THREE_OF_A_KIND)
-      return handClassification.get
-    }
-    if(pairs.size() == 2){
-      handClassification = Some(HandValue.TWO_PAIRS)
-      return handClassification.get
-    }
-    if(pairs.size() == 1){
-      handClassification = Some(HandValue.PAIR)
-      return handClassification.get
-    }
-    handClassification = Some(HandValue.HIGH_CARD)
+    handClassification = Some(handClassification.getOrElse {
+      if (isStraight && flush.nonEmpty) HandValue.STRAIGHT_FLUSH
+      else if (fourKind.isDefined) HandValue.FOUR_OF_A_KIND
+      else if (threeKind.isDefined && pairs.size() > 0) HandValue.FULL_HOUSE
+      else if (flush.nonEmpty) HandValue.FLUSH
+      else if (isStraight) HandValue.STRAIGHT
+      else if (threeKind.isDefined) HandValue.THREE_OF_A_KIND
+      else if (pairs.size() == 2) HandValue.TWO_PAIRS
+      else if (pairs.size() == 1) HandValue.PAIR
+      else HandValue.HIGH_CARD
+    })
 
     handClassification.get
   }
@@ -116,13 +91,12 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
 
    private def classifyHand(): Unit = {
 
-
      suitCounts = allCards.groupBy(_.suit).view.mapValues(_.size).toMap
      rankCounts = allCards.groupBy(_.rank).view.mapValues(_.size).toMap
 
      flush = checkFlush(suitCounts)
      checkRankCombinations()
-     checkStraight()
+     isStraight = checkStraight
   }
 
 
@@ -144,12 +118,12 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
     }
   }
 
-  private def checkStraight(): Unit = {
+  private def checkStraight: Boolean = {
     val sortedCards = allCards.sortBy(_.getRankWeight)
     val isA_highest = sortedCards.last.getRank == Rank.ACE
     val rankWeightsArray: Array[Int] = sortedCards.map(c => c.getRankWeight).toArray
     val newRankWeightsArray = if(isA_highest) 1 +: rankWeightsArray else rankWeightsArray
-    isStraight = newRankWeightsArray.sliding(5).exists(seq => seq.zip(seq.tail).forall { case (a, b) => b == a + 1 })
+    newRankWeightsArray.sliding(5).exists(seq => seq.zip(seq.tail).forall { case (a, b) => b == a + 1 })
   }
 
   override def toString: String = {

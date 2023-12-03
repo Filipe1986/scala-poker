@@ -18,7 +18,7 @@ class OmahaHold(line: String) extends PokerGame {
       hands.append(Hand(Poker.stringToCards(hs), null))
     })
 
-    hands.sortInPlaceBy(_.handClassification)
+    hands.sortInPlaceBy(_.getHandClassification)
 
     hands.toString()
   }
@@ -48,7 +48,7 @@ class FiveCardDraw(line: String) extends PokerGame {
     handsString.foreach(hs => {
       hands.append(Hand(Poker.stringToCards(hs), Seq.empty[Card]))
     })
-    hands.foreach(h => h.handClassification)
+    hands.foreach(h => h.getHandClassification)
     hands.sortInPlace()(Hand.handSorting)
     hands.foreach(s=> s.printHand())
     hands.mkString(" ")
