@@ -15,6 +15,6 @@ lazy val root = (project in file("."))
       "junit" % "junit" % junitVersion % Test, // Corrected JUnit dependency for testing
       "com.google.guava" % "guava" % guavaVersion, // Guava dependency
       "com.novocode" % "junit-interface" % "0.11" % "test",
-      "org.scalatest" %% "scalatest" % "3.2.12" % Test// Add this for better JUnit support in Scala
+      "org.scalatest" %% "scalatest" % "3.2.15" % Test// Add this for better JUnit support in Scala
     )
   )

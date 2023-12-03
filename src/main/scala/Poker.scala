@@ -22,7 +22,7 @@ object Poker {
 
   def stringToCards(cards: String): Seq[Card] = {
     require(cards.length % 2 == 0)
-    cards.grouped(2).map(Card).toList
+    cards.grouped(2).map(Card.apply).toList
   }
 
 }

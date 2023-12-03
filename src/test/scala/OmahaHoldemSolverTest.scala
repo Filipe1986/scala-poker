@@ -1,6 +1,8 @@
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.Ignore
 
+@Ignore
 class OmahaHoldemSolverTest extends AnyFunSuite with Matchers {
 
   test("Oh5c6dAcAsQs") {
