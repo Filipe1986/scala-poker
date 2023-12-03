@@ -1,7 +1,5 @@
 import Poker.HandValue
 import Poker._
-import java.util
-import java.util.ArrayList
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
@@ -14,7 +12,8 @@ object Hand {
         if(x.handClassification.contains(HandValue.HIGH_CARD)){
           compareRank(x, y)
         }else if(x.handClassification.contains(HandValue.PAIR)){
-          val compare = x.pairs.get(0).id.compare(y.pairs.get(0).id)
+
+          val compare = x.pairs.head.id.compare(y.pairs.head.id)
           if(compare == 0) {
             compareRank(x, y)
           } else {
@@ -58,12 +57,11 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
   private var isStraight: Boolean = false
   private var fourKind: Option[Rank.Value] = None
   private var threeKind: Option[Rank.Value] = None
-  private val pairs: util.ArrayList[Rank.Value] = new util.ArrayList
+  private var pairs: Seq[Rank.Value] = Seq.empty[Rank.Value]
 
   private var handClassification: Option[HandValue.Value] = None
 
   private var suitCounts: Map[Suit.Value, Int] = Map()
-
   private var rankCounts: Map[Rank.Value, Int] = Map()
 
 
@@ -72,12 +70,12 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
     handClassification = Some(handClassification.getOrElse {
       if (isStraight && flush.nonEmpty) HandValue.STRAIGHT_FLUSH
       else if (fourKind.isDefined) HandValue.FOUR_OF_A_KIND
-      else if (threeKind.isDefined && pairs.size() > 0) HandValue.FULL_HOUSE
+      else if (threeKind.isDefined && pairs.nonEmpty) HandValue.FULL_HOUSE
       else if (flush.nonEmpty) HandValue.FLUSH
       else if (isStraight) HandValue.STRAIGHT
       else if (threeKind.isDefined) HandValue.THREE_OF_A_KIND
-      else if (pairs.size() == 2) HandValue.TWO_PAIRS
-      else if (pairs.size() == 1) HandValue.PAIR
+      else if (pairs.length == 2) HandValue.TWO_PAIRS
+      else if (pairs.length == 1) HandValue.PAIR
       else HandValue.HIGH_CARD
     })
 
@@ -95,7 +93,9 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
      rankCounts = allCards.groupBy(_.rank).view.mapValues(_.size).toMap
 
      flush = checkFlush(suitCounts)
-     checkRankCombinations()
+     fourKind = rankCounts.collectFirst { case (rank, 4) => rank }
+     threeKind = rankCounts.collectFirst { case (rank, 3) => rank }
+     pairs = rankCounts.collect { case (rank, 2) => rank }.toSeq
      isStraight = checkStraight
   }
 
@@ -104,19 +104,12 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
     map.find { case (_, count) => count >= 5 }.map(_._1)
   }
 
-  private def checkRankCombinations() : Unit = {
-    rankCounts.foreach { case (rank, count) =>
-      if (count == 4) {
-        fourKind = Some(rank)
-      }
-      if (count == 3) {
-        threeKind = Some(rank)
-      }
-      if (count == 2){
-        pairs.add(rank)
-      }
-    }
+  private def checkRankCombinations(rankCounts: Map[Rank.Value, Int]): (Option[Rank.Value], Option[Rank.Value], Seq[Rank.Value]) = {
+
+
+    (fourKind, threeKind, pairs)
   }
+
 
   private def checkStraight: Boolean = {
     val sortedCards = allCards.sortBy(_.getRankWeight)
@@ -133,6 +126,4 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
   def printHand(): Unit = {
     println(s"Hand: $cards , classification: $handClassification, higher card ${cards.sortBy(_.getRank)} pairs: $pairs")
   }
-
-
 }
