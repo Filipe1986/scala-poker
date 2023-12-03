@@ -7,7 +7,6 @@ object Hand {
   implicit val handSorting: Ordering[Hand] = new Ordering[Hand] {
     def compare(x: Hand, y: Hand): Int = {
 
-      // TODO missing compare same handClassification for two pairs, three of a kind, straight, flush, four of a kind and straight flush
       if(x.handClassification.compare(y.handClassification) == 0){
         if(x.handClassification.contains(HandValue.HIGH_CARD)){
           compareRank(x, y)
@@ -19,6 +18,31 @@ object Hand {
           } else {
             compare
           }
+        }else if(x.handClassification.contains(HandValue.TWO_PAIRS)){
+          val xPairs = x.pairs.sorted.reverse
+          val yPairs = y.pairs.sorted.reverse
+
+          val compare = xPairs.head.id.compare(yPairs.head.id)
+          if (compare == 0) {
+            val compare2 = xPairs.tail.head.id.compare(yPairs.tail.head.id)
+            if (compare2 == 0) {
+              compareRank(x, y)
+            }else {
+              compare2
+            }
+
+          } else {
+            compare
+          }
+
+        } else if(x.handClassification.contains(HandValue.THREE_OF_A_KIND)){
+          val compare = x.threeKind.compare(y.threeKind)
+          if(compare == 0){
+            compareRank(x, y)
+          }else {
+            compare
+          }
+
         }else {
           println("else 0")
           0
@@ -50,6 +74,7 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
   require(cards.nonEmpty, "Cards cannot be empty")
 
   private val allCards = cards ++ board
+  private var sortedCards: Seq[Card] = Seq.empty[Card]
 
   private val handValue = Option[HandValue.Value]
 
@@ -67,6 +92,7 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
 
   def getHandClassification: HandValue.Value = {
     classifyHand()
+    sortedCards = cards.sortBy(_.getRankWeight).reverse
     handClassification = Some(handClassification.getOrElse {
       if (isStraight && flush.nonEmpty) HandValue.STRAIGHT_FLUSH
       else if (fourKind.isDefined) HandValue.FOUR_OF_A_KIND
@@ -89,6 +115,7 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
 
    private def classifyHand(): Unit = {
 
+
      suitCounts = allCards.groupBy(_.suit).view.mapValues(_.size).toMap
      rankCounts = allCards.groupBy(_.rank).view.mapValues(_.size).toMap
 
@@ -103,13 +130,6 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
   private def checkFlush(map: Map[Suit.Value, Int]): Option[Suit.Value] = {
     map.find { case (_, count) => count >= 5 }.map(_._1)
   }
-
-  private def checkRankCombinations(rankCounts: Map[Rank.Value, Int]): (Option[Rank.Value], Option[Rank.Value], Seq[Rank.Value]) = {
-
-
-    (fourKind, threeKind, pairs)
-  }
-
 
   private def checkStraight: Boolean = {
     val sortedCards = allCards.sortBy(_.getRankWeight)
