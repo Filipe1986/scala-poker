@@ -1,5 +1,5 @@
-import Board.HandValue
-
+import Poker.HandValue
+import Poker._
 import java.util
 import java.util.ArrayList
 import scala.collection.mutable
@@ -31,7 +31,6 @@ object Hand {
     }
 
     def compareRank(x: Hand, y: Hand): Int = {
-
 
       val xCopy = x.cards.sortBy(_.getRankWeight).reverse
       val yCopy = y.cards.sortBy(_.getRankWeight).reverse
@@ -68,7 +67,7 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
   private var rankCounterMap: mutable.Map[Rank.Value, Int] = mutable.Map()
 
 
-  def getHandClassification(): HandValue.Value = {
+  def getHandClassification: HandValue.Value = {
     classifyHand()
     if(handClassification.isDefined) {
       return handClassification.get
@@ -111,7 +110,7 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
   }
 
   def getHandWeight: Int = {
-    val classification = getHandClassification()
+    val classification = getHandClassification
     classification.id + 1
   }
 
@@ -123,6 +122,8 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
       suitCounterMap(c.suit) = suitCounterMap.getOrElseUpdate(c.suit, 0) + 1
       rankCounterMap(c.rank) = rankCounterMap.getOrElseUpdate(c.rank, 0) + 1
     })
+
+
   }
 
    private def classifyHand(): Unit = {

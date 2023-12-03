@@ -1,4 +1,4 @@
-import Board.HandValue
+import Poker.HandValue
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
@@ -10,15 +10,15 @@ class TexasHoldemSolverTest2 extends AnyFunSuite with Matchers {
   val board: String = "2h5c8sAsKc"
 
   test("Th2h5c8sAsKc3h4c hand classifier") {
-    Hand(Board.StringToCards("3h4c"), Board.generateBoard(board)).getHandClassification() shouldEqual HandValue.STRAIGHT
+    Hand(Poker.stringToCards("3h4c"), Poker.generateBoard(board)).getHandClassification() shouldEqual HandValue.STRAIGHT
   }
 
   test("Th2h5c8sAsKcQs9h hand classifier") {
-    Hand(Board.StringToCards("Qs9h"), Board.generateBoard(board)).getHandClassification() shouldEqual HandValue.HIGH_CARD
+    Hand(Poker.stringToCards("Qs9h"), Poker.generateBoard(board)).getHandClassification() shouldEqual HandValue.HIGH_CARD
   }
 
   test("Th2h5c8sAsKcJc6s hand classifier") {
-    Hand(Board.StringToCards("Jc6s"), Board.generateBoard(board)).getHandClassification() shouldEqual HandValue.HIGH_CARD
+    Hand(Poker.stringToCards("Jc6s"), Poker.generateBoard(board)).getHandClassification() shouldEqual HandValue.HIGH_CARD
   }
 
   test("Th2h5c8sAsKc") {
@@ -27,7 +27,7 @@ class TexasHoldemSolverTest2 extends AnyFunSuite with Matchers {
   }
 
   test("Texas Holdem 2h5c8sAsKc hand classifier") {
-    Hand(Board.StringToCards("2hAh"), Board.generateBoard(board)).getHandClassification() shouldEqual HandValue.TWO_PAIRS
+    Hand(Poker.stringToCards("2hAh"), Poker.generateBoard(board)).getHandClassification() shouldEqual HandValue.TWO_PAIRS
   }
 
 

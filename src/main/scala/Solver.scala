@@ -1,8 +1,10 @@
+import scala.language.postfixOps
+
 object Solver {
 
-  def process(line: String): String = {
-    val pokerGame = new PokerGameFactory().create(line)
-    pokerGame. sortHands()
+  def process(gameCards: String): String = {
+    val game = Poker organizes gameCards 
+    game sortHands
   }
 
 }

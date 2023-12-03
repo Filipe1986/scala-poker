@@ -43,7 +43,7 @@ case class Card(card: String) {
 
   def getRank: Rank.Value = rank
   def getSuit: Suit.Value = suit
-  def getRankWeight: Int = rank.id + 2 // Assuming TWO is the lowest rank
+  def getRankWeight: Int = rank.id + 2
 
   override def toString: String = {
     card
