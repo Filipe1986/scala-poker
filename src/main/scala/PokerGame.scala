@@ -31,7 +31,7 @@ class TexasHold(line: String) extends PokerGame {
     val board = Poker.generateBoard(parts(1))
 
     val hands = parts.drop(2).map(hs => Hand(Poker.stringToCards(hs), board))
-    hands.foreach(h => h.getHandClassification())
+    hands.foreach(h => h.getHandClassification)
     val sortedHands = hands.sorted(Hand.handSorting)
     sortedHands.foreach(s=> s.printHand())
 
@@ -48,7 +48,7 @@ class FiveCardDraw(line: String) extends PokerGame {
     handsString.foreach(hs => {
       hands.append(Hand(Poker.stringToCards(hs), Seq.empty[Card]))
     })
-    hands.foreach(h => h.getHandClassification())
+    hands.foreach(h => h.handClassification)
     hands.sortInPlace()(Hand.handSorting)
     hands.foreach(s=> s.printHand())
     hands.mkString(" ")

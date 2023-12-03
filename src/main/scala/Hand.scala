@@ -62,9 +62,9 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
 
   var handClassification: Option[HandValue.Value] = None
 
-  private var suitCounterMap: mutable.Map[Suit.Value , Int] =  mutable.Map()
+  private var suitCounts: Map[Suit.Value, Int] = Map()
 
-  private var rankCounterMap: mutable.Map[Rank.Value, Int] = mutable.Map()
+  private var rankCounts: Map[Rank.Value, Int] = Map()
 
 
   def getHandClassification: HandValue.Value = {
@@ -114,39 +114,25 @@ case class Hand(cards: Seq[Card], board: Seq[Card] = Seq.empty[Card]) {
     classification.id + 1
   }
 
-  private def handCount(): Unit = {
-    suitCounterMap = mutable.Map()
-    rankCounterMap = mutable.Map()
-
-    allCards.foreach(c => {
-      suitCounterMap(c.suit) = suitCounterMap.getOrElseUpdate(c.suit, 0) + 1
-      rankCounterMap(c.rank) = rankCounterMap.getOrElseUpdate(c.rank, 0) + 1
-    })
-
-
-  }
-
    private def classifyHand(): Unit = {
 
-     handCount()
-     checkFlush()
+
+     suitCounts = allCards.groupBy(_.suit).view.mapValues(_.size).toMap
+     rankCounts = allCards.groupBy(_.rank).view.mapValues(_.size).toMap
+
+     flush = checkFlush(suitCounts)
      checkRankCombinations()
      checkStraight()
   }
 
 
-  private def checkFlush(): Unit = {
-    suitCounterMap.foreach { case (suit, count) =>
-      if (count >= 5) {
-        flush = Some(suit)
-      }
-    }
+  private def checkFlush(map: Map[Suit.Value, Int]): Option[Suit.Value] = {
+    map.find { case (_, count) => count >= 5 }.map(_._1)
   }
 
-  private def checkRankCombinations(): Unit = {
-    rankCounterMap.foreach { case (rank, count) =>
+  private def checkRankCombinations() : Unit = {
+    rankCounts.foreach { case (rank, count) =>
       if (count == 4) {
-
         fourKind = Some(rank)
       }
       if (count == 3) {
